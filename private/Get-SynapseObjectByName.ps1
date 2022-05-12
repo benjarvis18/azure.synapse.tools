@@ -53,6 +53,13 @@ function Get-SynapseObjectByName {
                 $r.Deployed = $true
             }
         }
+        'BigDataPool'
+        {
+            $r = New-Object -TypeName SynapseObject 
+            $r.Name = $name
+            $r.Type = $simtype
+            $r.Deployed = $true
+        }
         default
         {
             Write-Error "ASWT0014: Type [$type] is not supported."

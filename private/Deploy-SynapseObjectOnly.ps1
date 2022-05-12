@@ -97,11 +97,16 @@ function Deploy-SynapseObjectOnly {
         }
         'pipeline'
         {
-            Set-AzSynapsePipeline `
-            -WorkspaceName $SynapseWorkspaceName `
-            -Name $obj.Name `
-            -DefinitionFile $obj.FileName `
-            | Out-Null
+            # Set-AzSynapsePipeline `
+            # -WorkspaceName $SynapseWorkspaceName `
+            # -Name $obj.Name `
+            # -DefinitionFile $obj.FileName `
+            # | Out-Null
+
+            $h = Get-RequestHeader
+            $uri = "https://$SynapseWorkspaceName.dev.azuresynapse.net/pipelines/$($obj.Name)?api-version=2020-12-01"
+            $r = Invoke-RestMethod -Method PUT -Uri $uri -Body $body -Headers $h
+            Wait-CompleteOperation -SynapseWorkspaceName $SynapseWorkspaceName -requestHeader $h -operationId $r.operationId -operation 'operationResults' | Out-Null
         }
         'dataset'
         {
@@ -110,6 +115,7 @@ function Deploy-SynapseObjectOnly {
             # -Name $obj.Name `
             # -DefinitionFile $obj.FileName `
             # | Out-Null
+            
             $h = Get-RequestHeader
             $uri = "https://$SynapseWorkspaceName.dev.azuresynapse.net/datasets/$($obj.Name)?api-version=2020-12-01"
             $r = Invoke-RestMethod -Method PUT -Uri $uri -Body $body -Headers $h

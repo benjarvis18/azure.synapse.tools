@@ -8,11 +8,13 @@ function Find-RefObject($node, $list) {
         -and $node.PSobject.Properties.Name -contains 'referenceName' `
         -and $node.PSobject.Properties.Name -contains 'type') 
     {
-        [string] $type = $node.type
-        if ($type.EndsWith('Reference')) {
-            $type = $type.Substring(0, $type.Length-9)
-            #Write-Verbose "$type.$($node.referenceName)"
-            $list.Add("$type.$($node.referenceName)") | Out-Null
+        if ($node.referenceName.GetType().Name -ne 'PSCustomObject') {
+          [string] $type = $node.type
+          if ($type.EndsWith('Reference')) {
+              $type = $type.Substring(0, $type.Length-9)
+              Write-Verbose "$type.$($node.referenceName)"
+              $list.Add("$type.$($node.referenceName)") | Out-Null
+          }          
         }
     }
 
@@ -27,7 +29,7 @@ function Find-RefObject($node, $list) {
         $m = Get-Member -InputObject $node -MemberType 'NoteProperty'
         $m | ForEach-Object {
             $name = $_.Name
-            Write-Debug ("-"+"."*2*$script:ind + "$name")
+            # Write-Debug ("-"+"."*2*$script:ind + "$name")
             if ($name.Length -gt 0)
             {
                 Invoke-Expression "`$in = `$node.`'$name`'"
